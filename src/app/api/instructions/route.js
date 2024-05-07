@@ -43,3 +43,27 @@ export async function POST(request) {
         });
     }
 }
+
+export async function GET(request) {
+    try {
+        // Retrieve the current assistant's details
+        const assistant = await openai.beta.assistants.retrieve(OPENAI_ASSISTANT_ID);
+        const currentInstructions = assistant.instructions || "";
+
+        return new Response(JSON.stringify({
+            status: 'success',
+            currentInstructions
+        }), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+    } catch (e) {
+        console.error(e);
+        return new Response('Error retrieving assistant instructions.', {
+            status: 500,
+        });
+    }
+}
