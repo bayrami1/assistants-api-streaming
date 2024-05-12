@@ -10,8 +10,8 @@ function Instructions() {
         fetch('/api/instructions')
             .then(response => response.json())
             .then(data => {
-                if (data && data.instructions) {
-                    setInstructions(data.instructions);
+                if (data && data.currentInstructions) {
+                    setInstructions(data.currentInstructions);
                 } else {
                     setInstructions('No instructions available.');
                 }
@@ -25,7 +25,7 @@ function Instructions() {
     return (
         <div>
             <h1>Instructions</h1>
-            <p>{instructions}</p>
+            <p style={{ whiteSpace: 'pre-line' }}>{instructions}</p>
         </div>
     );
 }

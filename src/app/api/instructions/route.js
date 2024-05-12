@@ -1,5 +1,14 @@
 import openai from '@/service/openai';
 
+// Function to create headers for OpenAI API requests
+function createOpenAIHeaders() {
+    return {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'OpenAI-Beta': 'assistants=v2'
+    };
+}
+
+// Handler for POST requests to update instructions
 export async function POST(request) {
     const { message } = await request.json();
     const triggerPhrase = "Update Instructions";
@@ -15,15 +24,19 @@ export async function POST(request) {
 
     try {
         // Retrieve the current assistant's details
-        const assistant = await openai.beta.assistants.retrieve(OPENAI_ASSISTANT_ID);
+        const assistant = await openai.beta.assistants.retrieve(process.env.OPENAI_ASSISTANT_ID, {
+            headers: createOpenAIHeaders()
+        });
         const currentInstructions = assistant.instructions || "";
 
         // Append the new instructions to the existing ones
         const updatedInstructions = `${currentInstructions}\n${newInstructionsText}`;
 
         // Update the assistant with the appended instructions
-        const response = await openai.beta.assistants.update(OPENAI_ASSISTANT_ID, {
+        const response = await openai.beta.assistants.update(process.env.OPENAI_ASSISTANT_ID, {
             instructions: updatedInstructions
+        }, {
+            headers: createOpenAIHeaders()
         });
 
         return new Response(JSON.stringify({
@@ -44,10 +57,13 @@ export async function POST(request) {
     }
 }
 
+// Handler for GET requests to retrieve current instructions
 export async function GET(request) {
     try {
         // Retrieve the current assistant's details
-        const assistant = await openai.beta.assistants.retrieve(OPENAI_ASSISTANT_ID);
+        const assistant = await openai.beta.assistants.retrieve(process.env.OPENAI_ASSISTANT_ID, {
+            headers: createOpenAIHeaders()
+        });
         const currentInstructions = assistant.instructions || "";
 
         return new Response(JSON.stringify({
